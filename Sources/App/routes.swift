@@ -28,6 +28,12 @@ func routes(_ app: Application) throws {
         return Model.mocks
     }
     
+    // ~/kujira/get/model/query?sort=asc&search=taiwan
+    app.get("kujira", "get", "models", "query") { request async throws in
+        let query = try request.query.decode(Query.self)
+        return query
+    }
+    
     // MARK: - POST
     
     // ~/kujira/post/model
