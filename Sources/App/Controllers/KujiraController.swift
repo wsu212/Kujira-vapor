@@ -12,7 +12,6 @@ struct KujiraController: RouteCollection {
     func boot(routes: any RoutesBuilder) throws {
         let kujira = routes.grouped("kujira")
         kujira.get(use: index)
-        
         kujira.get(":id", use: show)
     }
     
