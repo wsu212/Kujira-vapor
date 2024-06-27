@@ -9,10 +9,13 @@ public func configure(_ app: Application) async throws {
     
     app.databases.use(
         .postgres(
-            hostname: "localhost",
-            username: "postgres",
-            password: "",
-            database: "kujiradb"
+            configuration: .init(
+                hostname: "localhost",
+                port: 5432,
+                username: "postgres",
+                database: "kujiradb",
+                tls: .disable
+            )
         ),
         as: .psql
     )
