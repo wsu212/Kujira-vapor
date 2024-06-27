@@ -9,12 +9,13 @@ import Foundation
 import Vapor
 import Fluent
 
-class UserController: RouteCollection {
+final class UserController: RouteCollection, Sendable {
     func boot(routes: any RoutesBuilder) throws {
         let api = routes.grouped("api")
         api.post("register", use: register)
     }
     
+    @Sendable
     func register(req: Request) async throws -> RegisterResponseDTO {
         // validate the user
         try User.validate(content: req)
