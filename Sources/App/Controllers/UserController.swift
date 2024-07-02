@@ -12,10 +12,15 @@ import Fluent
 final class UserController: RouteCollection, Sendable {
     func boot(routes: any RoutesBuilder) throws {
         let api = routes.grouped("api")
+        // /api/register
         api.post("register", use: register)
+        
+        // /api/login
+        api.post("login", use: login)
     }
     
-    func login(req: Request) async throws -> String {
+    @Sendable
+    func login(req: Request) async throws -> LoginResponseDTO {
         // decode the request
         let user = try req.content.decode(User.self)
         
@@ -39,9 +44,16 @@ final class UserController: RouteCollection, Sendable {
         }
         
         // generate the token and return it to the user
-        //let payload = AuthPayload(subject: <#T##SubjectClaim#>, expiration: <#T##ExpirationClaim#>, userID: <#T##UUID#>)
+        let authPayload = try AuthPayload(
+            expiration: .init(value: .distantFuture),
+            userID: existingUser.requireID()
+        )
         
-        return ""
+        return try .init(
+            error: false,
+            token: req.jwt.sign(authPayload),
+            userID: existingUser.requireID()
+        )
     }
     
     @Sendable
