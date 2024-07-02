@@ -39,6 +39,7 @@ final class UserController: RouteCollection, Sendable {
         }
         
         // generate the token and return it to the user
+        //let payload = AuthPayload(subject: <#T##SubjectClaim#>, expiration: <#T##ExpirationClaim#>, userID: <#T##UUID#>)
         
         return ""
     }
