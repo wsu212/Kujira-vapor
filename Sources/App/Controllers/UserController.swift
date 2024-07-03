@@ -28,7 +28,10 @@ final class UserController: RouteCollection, Sendable {
         guard let existingUser = try await User.query(on: req.db)
             .filter(\.$username == user.username)
             .first() else {
-                throw Abort(.badRequest)
+                return LoginResponseDTO(
+                    error: true,
+                    reason: "Username is not found."
+                )
             }
         
         // validate the password
@@ -40,7 +43,10 @@ final class UserController: RouteCollection, Sendable {
             )
         
         if !isVerified {
-            throw Abort(.unauthorized)
+            return LoginResponseDTO(
+                error: true,
+                reason: "Password is incorrect."
+            )
         }
         
         // generate the token and return it to the user
