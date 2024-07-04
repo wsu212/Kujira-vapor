@@ -8,6 +8,7 @@
 import Foundation
 import Vapor
 import Fluent
+import DTO
 
 final class UserController: RouteCollection, Sendable {
     func boot(routes: any RoutesBuilder) throws {
