@@ -10,3 +10,4 @@ import Vapor
 
 extension LoginResponseDTO: Content {}
 extension RegisterResponseDTO: Content {}
+extension CategoryResponseDTO: Content {}
