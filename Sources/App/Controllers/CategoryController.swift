@@ -8,6 +8,7 @@
 import Foundation
 import Vapor
 import DTO
+import Fluent
 
 final class CategoryController: RouteCollection, Sendable {
     func boot(routes: any RoutesBuilder) throws {
@@ -17,6 +18,10 @@ final class CategoryController: RouteCollection, Sendable {
         // POST: Saving Category
         // /api/users/:userId/categories
         api.post("categories", use: saveCategory)
+        
+        // GET: Fetching Categories
+        // /api/users/:userId/categories
+        api.get("categories", use: fetchCategories)
     }
     
     @Sendable
@@ -48,5 +53,21 @@ final class CategoryController: RouteCollection, Sendable {
             title: category.title,
             colorCode: category.colorCode
         )
+    }
+    
+    @Sendable
+    func fetchCategories(req: Request) async throws -> [CategoryResponseDTO] {
+        // get the userId
+        guard let userId = req.parameters.get("userId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        
+        // get categories by userId
+        let categories = try await Category.query(on: req.db)
+            .filter(\.$user.$id == userId)
+            .all()
+            .compactMap(CategoryResponseDTO.init)
+        
+        return categories
     }
 }
