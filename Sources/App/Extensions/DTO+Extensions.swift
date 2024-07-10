@@ -21,3 +21,14 @@ extension CategoryResponseDTO {
     }
     
 }
+
+extension ItemResponseDTO: Content {}
+
+extension ItemResponseDTO {
+    init?(_ item: Item) {
+        guard let id = item.id else {
+            return nil
+        }
+        self.init(id: id, title: item.title, price: item.price, quantity: item.quantity)
+    }
+}

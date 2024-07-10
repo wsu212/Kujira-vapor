@@ -26,6 +26,10 @@ final class CategoryController: RouteCollection, Sendable {
         // DELETE: Delete Category
         // /api/users/:userId/categories/:categoryId
         api.delete("categories", ":categoryId", use: deleteCategory)
+        
+        // POST: Saving Item
+        // /api/users/:userId/categories/:categoryId/items
+        api.post("categories", ":categoryId", "items", use: saveItem)
     }
     
     @Sendable
@@ -94,6 +98,48 @@ final class CategoryController: RouteCollection, Sendable {
         try await category.delete(on: req.db)
         
         guard let responseDTO = CategoryResponseDTO(category) else {
+            throw Abort(.internalServerError)
+        }
+        
+        return responseDTO
+    }
+    
+    @Sendable
+    func saveItem(req: Request) async throws -> ItemResponseDTO {
+        // get the userId
+        guard let userId = req.parameters.get("userId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        // get the categoryId
+        guard let categoryId = req.parameters.get("categoryId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        // find the user
+        guard let _ = try await User.find(userId, on: req.db) else {
+            throw Abort(.notFound)
+        }
+        // find the category
+        guard let _ = try await Category.query(on: req.db)
+            .filter(\.$user.$id == userId)
+            .filter(\.$id == categoryId)
+            .first() else { throw Abort(.notFound) }
+        
+        // decode ItemRequestDTO
+        let itemRequestDTO = try req.content.decode(ItemRequestDTO.self)
+        
+        // convert to Item
+        let item = Item(
+            title: itemRequestDTO.title,
+            price: itemRequestDTO.price,
+            quantity: itemRequestDTO.quantity,
+            categoryId: categoryId
+        )
+        
+        // save the item to database
+        try await item.save(on: req.db)
+        
+        // DTO for the response
+        guard let responseDTO = ItemResponseDTO(item) else {
             throw Abort(.internalServerError)
         }
         
