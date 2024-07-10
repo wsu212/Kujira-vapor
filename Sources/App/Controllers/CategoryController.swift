@@ -22,6 +22,10 @@ final class CategoryController: RouteCollection, Sendable {
         // GET: Fetching Categories
         // /api/users/:userId/categories
         api.get("categories", use: fetchCategories)
+        
+        // DELETE: Delete Category
+        // /api/users/:userId/categories/:categoryId
+        api.delete("categories", ":categoryId", use: deleteCategory)
     }
     
     @Sendable
@@ -69,5 +73,30 @@ final class CategoryController: RouteCollection, Sendable {
             .compactMap(CategoryResponseDTO.init)
         
         return categories
+    }
+    
+    @Sendable
+    func deleteCategory(req: Request) async throws -> CategoryResponseDTO {
+        // get the userId
+        guard let userId = req.parameters.get("userId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        // get the categoryId
+        guard let categoryId = req.parameters.get("categoryId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        
+        guard let category = try await Category.query(on: req.db)
+            .filter(\.$user.$id == userId)
+            .filter(\.$id == categoryId)
+            .first() else { throw Abort(.notFound) }
+        
+        try await category.delete(on: req.db)
+        
+        guard let responseDTO = CategoryResponseDTO(category) else {
+            throw Abort(.internalServerError)
+        }
+        
+        return responseDTO
     }
 }
