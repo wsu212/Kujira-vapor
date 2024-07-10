@@ -25,7 +25,7 @@ final class Item: Model {
     var quantity: Int
     
     // foreign key
-    @Parent(key: "categoryId")
+    @Parent(key: "category_id")
     var category: Category
     
     init() { }

@@ -15,7 +15,7 @@ struct CreateItemsTableMigration: AsyncMigration {
             .field("title", .string, .required)
             .field("price", .double, .required)
             .field("quantity", .int, .required)
-            .field("categoryId", .uuid, .required, .references("categories", "id", onDelete: .cascade)) // foreign key
+            .field("category_id", .uuid, .required, .references("categories", "id", onDelete: .cascade)) // foreign key
             .create()
     }
     
