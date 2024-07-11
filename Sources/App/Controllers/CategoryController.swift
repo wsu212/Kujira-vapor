@@ -15,11 +15,11 @@ final class CategoryController: RouteCollection, Sendable {
         // /api/users/:userId
         let api = routes.grouped("api", "users", ":userId")
         
-        // POST: Saving Category
+        // POST: Save Category
         // /api/users/:userId/categories
         api.post("categories", use: saveCategory)
         
-        // GET: Fetching Categories
+        // GET: Fetch Categories
         // /api/users/:userId/categories
         api.get("categories", use: fetchCategories)
         
@@ -27,9 +27,13 @@ final class CategoryController: RouteCollection, Sendable {
         // /api/users/:userId/categories/:categoryId
         api.delete("categories", ":categoryId", use: deleteCategory)
         
-        // POST: Saving Item
+        // POST: Save Item
         // /api/users/:userId/categories/:categoryId/items
         api.post("categories", ":categoryId", "items", use: saveItem)
+        
+        // GET: Fetch Items
+        // /api/users/:userId/categories/:categoryId/items
+        api.get("categories", ":categoryId", "items", use: fetchItemsByCategory)
     }
     
     @Sendable
@@ -77,6 +81,36 @@ final class CategoryController: RouteCollection, Sendable {
             .compactMap(CategoryResponseDTO.init)
         
         return categories
+    }
+    
+    @Sendable
+    func fetchItemsByCategory(req: Request) async throws -> [ItemResponseDTO] {
+        // get the userId and categoryId
+        guard let userId = req.parameters.get("userId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        guard let categoryId = req.parameters.get("categoryId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        
+        // validate the userId
+        guard let _ = try await User.find(userId, on: req.db) else {
+            throw Abort(.notFound)
+        }
+        
+        // find the category
+        guard let _ = try await Category.query(on: req.db)
+            .filter(\.$user.$id == userId)
+            .filter(\.$id == categoryId)
+            .first() else { throw Abort(.notFound) }
+        
+        // get items by userId and categoryId
+        let items = try await Item.query(on: req.db)
+            .filter(\.$category.$id == categoryId)
+            .all()
+            .compactMap(ItemResponseDTO.init)
+        
+        return items
     }
     
     @Sendable
