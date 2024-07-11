@@ -1,4 +1,4 @@
-# Kujira-vapor 鯨向海
+# Kujira-vapor 向海
 
 ## Overview
 Kujira-vapor is a Vapor-based server-side Swift application that provides endpoints for clients to fetch a list of whales, create a new category of whale, or delete an existing category. This app is designed to be lightweight and easy to use, leveraging the power and simplicity of Vapor.
