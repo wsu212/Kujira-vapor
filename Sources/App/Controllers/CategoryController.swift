@@ -34,6 +34,10 @@ final class CategoryController: RouteCollection, Sendable {
         // GET: Fetch Items
         // /api/users/:userId/categories/:categoryId/items
         api.get("categories", ":categoryId", "items", use: fetchItemsByCategory)
+        
+        // DELETE: Delete Item
+        // /api/users/:userId/categories/:categoryId/items/:itemId
+        api.delete("categories", ":categoryId", "items", ":itemId", use: deleteItem)
     }
     
     @Sendable
@@ -173,6 +177,43 @@ final class CategoryController: RouteCollection, Sendable {
         try await item.save(on: req.db)
         
         // DTO for the response
+        guard let responseDTO = ItemResponseDTO(item) else {
+            throw Abort(.internalServerError)
+        }
+        
+        return responseDTO
+    }
+    
+    @Sendable
+    func deleteItem(req: Request) async throws -> ItemResponseDTO {
+        // get the userId
+        guard let userId = req.parameters.get("userId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        // get the categoryId
+        guard let categoryId = req.parameters.get("categoryId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        // get the itemId
+        guard let itemId = req.parameters.get("itemId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        // make sure the category exists and belongs to a user
+        guard let _ = try await Category.query(on: req.db)
+            .filter(\.$user.$id == userId)
+            .filter(\.$id == categoryId)
+            .first() else { throw Abort(.notFound) }
+        
+        guard let item = try await Item.query(on: req.db)
+            .filter(\.$id == itemId)
+            .filter(\.$category.$id == categoryId)
+            .first() else {
+            throw Abort(.notFound)
+        }
+        
+        // delete the item from database
+        try await item.delete(on: req.db)
+        
         guard let responseDTO = ItemResponseDTO(item) else {
             throw Abort(.internalServerError)
         }
