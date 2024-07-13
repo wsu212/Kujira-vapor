@@ -14,6 +14,7 @@ final class CategoryController: RouteCollection, Sendable {
     func boot(routes: any RoutesBuilder) throws {
         // /api/users/:userId
         let api = routes.grouped("api", "users", ":userId")
+            .grouped(JSONWebTokenAuthenticator())
         
         // POST: Save Category
         // /api/users/:userId/categories
