@@ -8,18 +8,24 @@ public func configure(_ app: Application) async throws {
     // uncomment to serve files from /Public folder
     // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
     
-    app.databases.use(
-        .postgres(
-            configuration: .init(
-                hostname: Environment.get("DB_HOST_NAME") ?? "localhost",
-                port: 5432,
-                username: Environment.get("DB_USER_NAME") ?? "postgres",
-                database: Environment.get("DB_NAME") ?? "kujiradb",
-                tls: .disable
-            )
-        ),
-        as: .psql
-    )
+    if let databaseURL = Environment.get("DATABASE_URL") {
+        let postgresConfig = try SQLPostgresConfiguration(url: databaseURL)
+        //postgresConfig.tlsConfiguration = .makeClientConfiguration()
+        app.databases.use(.postgres(configuration: postgresConfig), as: .psql)
+    } else {
+        app.databases.use(
+            .postgres(
+                configuration: .init(
+                    hostname: Environment.get("DB_HOST_NAME") ?? "localhost",
+                    port: 5432,
+                    username: Environment.get("DB_USER_NAME") ?? "postgres",
+                    database: Environment.get("DB_NAME") ?? "kujiradb",
+                    tls: .disable
+                )
+            ),
+            as: .psql
+        )
+    }
     
     // register migrations
     app.migrations.add(CreateUsersTableMigration())
