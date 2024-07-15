@@ -11,10 +11,10 @@ public func configure(_ app: Application) async throws {
     app.databases.use(
         .postgres(
             configuration: .init(
-                hostname: "localhost",
+                hostname: Environment.get("DB_HOST_NAME") ?? "localhost",
                 port: 5432,
-                username: "postgres",
-                database: "kujiradb",
+                username: Environment.get("DB_USER_NAME") ?? "postgres",
+                database: Environment.get("DB_NAME") ?? "kujiradb",
                 tls: .disable
             )
         ),
@@ -30,7 +30,7 @@ public func configure(_ app: Application) async throws {
     try app.register(collection: UserController())
     try app.register(collection: CategoryController())
     
-    app.jwt.signers.use(.hs256(key: "SECRETKEY"))
+    app.jwt.signers.use(.hs256(key: Environment.get("JWT_SIGN_KEY") ?? "SECRETKEY"))
     
     // register routes
     try routes(app)
