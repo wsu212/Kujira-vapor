@@ -8,9 +8,9 @@ public func configure(_ app: Application) async throws {
     // uncomment to serve files from /Public folder
     // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
     
-    if let databaseURL = Environment.get("DATABASE_URL") {
-        let postgresConfig = try SQLPostgresConfiguration(url: databaseURL)
-        //postgresConfig.tlsConfiguration = .makeClientConfiguration()
+    if let databaseURL = Environment.get("DATABASE_URL"), var postgresConfig = PostgresConfiguration(url: databaseURL) {
+        postgresConfig.tlsConfiguration = .makeClientConfiguration()
+        postgresConfig.tlsConfiguration?.certificateVerification = .none
         app.databases.use(.postgres(configuration: postgresConfig), as: .psql)
     } else {
         app.databases.use(
