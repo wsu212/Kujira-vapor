@@ -36,6 +36,7 @@ public func configure(_ app: Application) async throws {
     // register controllers
     try app.register(collection: UserController())
     try app.register(collection: CategoryController())
+    try app.register(collection: RecipeController())
     
     app.jwt.signers.use(.hs256(key: Environment.get("JWT_SIGN_KEY") ?? "SECRETKEY"))
     
