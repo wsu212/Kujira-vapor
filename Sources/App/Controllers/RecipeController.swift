@@ -31,14 +31,14 @@ final class RecipeController: RouteCollection, Sendable {
         // POST: Save Ingredient
         // /api/users/:userId/recipes/:recipeId/ingredients
         api.post("recipes", ":recipeId", "ingredients", use: saveIngredient)
-//
-//        // GET: Fetch Ingredients
-//        // /api/users/:userId/recipes/:categoryId/items
-//        api.get("recipes", ":categoryId", "items", use: fetchItemsByCategory)
-//        
-//        // DELETE: Delete Ingredient
-//        // /api/users/:userId/recipes/:categoryId/items/:itemId
-//        api.delete("recipes", ":categoryId", "items", ":itemId", use: deleteItem)
+
+        // GET: Fetch Ingredients
+        // /api/users/:userId/recipes/:ingredients/ingredients
+        api.get("recipes", ":recipeId", "ingredients", use: fetchIngredientsByRecipe)
+
+        // DELETE: Delete Ingredient
+        // /api/users/:userId/recipes/:recipeId/ingredients/:ingredientId
+        api.delete("recipes", ":recipeId", "ingredients", ":ingredientId", use: deleteIngredient)
     }
     
     @Sendable
@@ -150,6 +150,70 @@ final class RecipeController: RouteCollection, Sendable {
         try await ingredient.save(on: req.db)
         
         // DTO for the response
+        guard let responseDTO = IngredientResponseDTO(ingredient) else {
+            throw Abort(.internalServerError)
+        }
+        
+        return responseDTO
+    }
+    
+    @Sendable
+    private func fetchIngredientsByRecipe(req: Request) async throws -> [IngredientResponseDTO] {
+        // get the userId and recipeId
+        guard let userId = req.parameters.get("userId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        guard let recipeId = req.parameters.get("recipeId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        
+        // validate the userId
+        guard let _ = try await User.find(userId, on: req.db) else {
+            throw Abort(.notFound)
+        }
+        
+        // find the recipe
+        guard let _ = try await Recipe.query(on: req.db)
+            .filter(\.$user.$id == userId)
+            .filter(\.$id == recipeId)
+            .first() else { throw Abort(.notFound) }
+        
+        // get ingredients by recipeId
+        let ingredients = try await Ingredient.query(on: req.db)
+            .filter(\.$recipe.$id == recipeId)
+            .all()
+            .compactMap(IngredientResponseDTO.init)
+        
+        return ingredients
+    }
+    
+    @Sendable
+    private func deleteIngredient(req: Request) async throws -> IngredientResponseDTO {
+        // get the userId, recipeId, and ingredientId
+        guard let userId = req.parameters.get("userId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        guard let recipeId = req.parameters.get("recipeId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        guard let ingredientId = req.parameters.get("ingredientId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        // find the recipe
+        guard let _ = try await Recipe.query(on: req.db)
+            .filter(\.$user.$id == userId)
+            .filter(\.$id == recipeId)
+            .first() else { throw Abort(.notFound) }
+        
+        // find the ingredient
+        guard let ingredient = try await Ingredient.query(on: req.db)
+            .filter(\.$id == ingredientId)
+            .filter(\.$recipe.$id == recipeId)
+            .first() else { throw Abort(.notFound) }
+        
+        // delete the ingredient from database
+        try await ingredient.delete(on: req.db)
+        
         guard let responseDTO = IngredientResponseDTO(ingredient) else {
             throw Abort(.internalServerError)
         }
