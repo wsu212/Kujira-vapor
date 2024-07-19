@@ -43,3 +43,14 @@ extension RecipeResponseDTO {
         self.init(id: id, title: recipe.title, image: recipe.image)
     }
 }
+
+extension IngredientResponseDTO: Content {}
+
+extension IngredientResponseDTO {
+    init?(_ ingredient: Ingredient) {
+        guard let id = ingredient.id else {
+            return nil
+        }
+        self.init(id: id, title: ingredient.title, image: ingredient.image, quantity: ingredient.quantity)
+    }
+}

@@ -27,6 +27,18 @@ final class RecipeController: RouteCollection, Sendable {
         // DELETE: Delete Recipe
         // /api/users/:userId/recipes/:recipeId
         api.delete("recipes", ":recipeId", use: deleteRecipe)
+        
+        // POST: Save Ingredient
+        // /api/users/:userId/recipes/:recipeId/ingredients
+        api.post("recipes", ":recipeId", "ingredients", use: saveIngredient)
+//
+//        // GET: Fetch Ingredients
+//        // /api/users/:userId/recipes/:categoryId/items
+//        api.get("recipes", ":categoryId", "items", use: fetchItemsByCategory)
+//        
+//        // DELETE: Delete Ingredient
+//        // /api/users/:userId/recipes/:categoryId/items/:itemId
+//        api.delete("recipes", ":categoryId", "items", ":itemId", use: deleteItem)
     }
     
     @Sendable
@@ -74,7 +86,8 @@ final class RecipeController: RouteCollection, Sendable {
         return recipes
     }
     
-    @Sendable func deleteRecipe(req: Request) async throws -> RecipeResponseDTO {
+    @Sendable 
+    private func deleteRecipe(req: Request) async throws -> RecipeResponseDTO {
         // get the userId
         guard let userId = req.parameters.get("userId", as: UUID.self) else {
             throw Abort(.badRequest)
@@ -99,6 +112,48 @@ final class RecipeController: RouteCollection, Sendable {
         }
         
         // return the DTO to the client
+        return responseDTO
+    }
+    
+    @Sendable
+    private func saveIngredient(req: Request) async throws -> IngredientResponseDTO {
+        // get the userId
+        guard let userId = req.parameters.get("userId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        // get the recipeId
+        guard let recipeId = req.parameters.get("recipeId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        // find the user
+        guard let _ = try await User.find(userId, on: req.db) else {
+            throw Abort(.notFound)
+        }
+        // find the recipe
+        guard let _ = try await Recipe.query(on: req.db)
+            .filter(\.$user.$id == userId)
+            .filter(\.$id == recipeId)
+            .first() else { throw Abort(.notFound) }
+        
+        // decode IngredientRequestDTO
+        let requestDTO = try req.content.decode(IngredientRequestDTO.self)
+        
+        // convert to Ingredient
+        let ingredient = Ingredient(
+            title: requestDTO.title,
+            image: requestDTO.image,
+            quantity: requestDTO.quantity,
+            recipeId: recipeId
+        )
+        
+        // save the ingredient to database
+        try await ingredient.save(on: req.db)
+        
+        // DTO for the response
+        guard let responseDTO = IngredientResponseDTO(ingredient) else {
+            throw Abort(.internalServerError)
+        }
+        
         return responseDTO
     }
 }
