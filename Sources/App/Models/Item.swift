@@ -18,11 +18,11 @@ final class Item: Model {
     @Field(key: "title")
     var title: String
     
-    @Field(key: "price")
-    var price: Double
-    
     @Field(key: "quantity")
     var quantity: Int
+    
+    @Field(key: "isChecked")
+    var isChecked: Bool
     
     // foreign key
     @Parent(key: "category_id")
@@ -30,11 +30,11 @@ final class Item: Model {
     
     init() { }
     
-    init(id: UUID? = nil, title: String, price: Double, quantity: Int, categoryId: UUID) {
+    init(id: UUID? = nil, title: String, quantity: Int, isChecked: Bool, categoryId: UUID) {
         self.id = id
         self.title = title
-        self.price = price
         self.quantity = quantity
+        self.isChecked = isChecked
         self.$category.id = categoryId
     }
 }

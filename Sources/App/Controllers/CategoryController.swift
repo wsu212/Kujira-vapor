@@ -169,8 +169,8 @@ final class CategoryController: RouteCollection, Sendable {
         // convert to Item
         let item = Item(
             title: itemRequestDTO.title,
-            price: itemRequestDTO.price,
             quantity: itemRequestDTO.quantity,
+            isChecked: itemRequestDTO.isChecked,
             categoryId: categoryId
         )
         
