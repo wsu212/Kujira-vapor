@@ -1,5 +1,5 @@
 {
-  "originHash" : "ac123990ed1beab855110bad1a7f11793a8603bcd3fe3090951449e7539381d8",
+  "originHash" : "019883c311f3e7f1f92a676ecf4f1ad9951d0453dd943c0ebbfe42a64e9add7a",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -26,15 +26,6 @@
       "state" : {
         "revision" : "9f7932f22ab6f64aafadc14491e694179b7d0f6f",
         "version" : "4.14.3"
-      }
-    },
-    {
-      "identity" : "dto",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/wsu212/DTO.git",
-      "state" : {
-        "branch" : "main",
-        "revision" : "62c17b5a7bca77f05e45aacfdff524c148e620f2"
       }
     },
     {
