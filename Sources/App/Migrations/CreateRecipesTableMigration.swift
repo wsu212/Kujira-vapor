@@ -45,3 +45,15 @@ struct CreateRecipesTableMigration_v2: AsyncMigration {
             .update()
     }
 }
+
+struct DeleteFavoriteRecipesTableMigration: AsyncMigration {
+    func prepare(on database: any Database) async throws {
+        // Delete the favorite_recipes table
+        try await database.schema("favorite_recipes").delete()
+                
+        // Delete the favorite_recipes_v2 table
+        try await database.schema("favorite_recipes_v2").delete()
+    }
+    
+    func revert(on database: any Database) async throws { }
+}
