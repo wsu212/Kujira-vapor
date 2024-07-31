@@ -8,6 +8,7 @@
 import Foundation
 import Vapor
 import Fluent
+import DTO
 
 /// Model object representing a Recipe for database storage.
 final class Recipe: Model {
@@ -34,6 +35,9 @@ final class Recipe: Model {
     @Field(key: "summary")
     var summary: String
     
+    @Field(key: "extendedIngredients")
+    var extendedIngredients: [IngredientDTO]
+    
     // foreign key
     @Parent(key: "user_id")
     var user: User
@@ -48,6 +52,7 @@ final class Recipe: Model {
         servings: Int,
         sourceUrl: String,
         summary: String,
+        extendedIngredients: [IngredientDTO],
         userID: UUID
     ) {
         self.id = id
@@ -57,6 +62,7 @@ final class Recipe: Model {
         self.servings = servings
         self.sourceUrl = sourceUrl
         self.summary = summary
+        self.extendedIngredients = extendedIngredients
         self.$user.id = userID
     }
 }
