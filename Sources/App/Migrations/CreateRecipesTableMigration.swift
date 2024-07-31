@@ -23,3 +23,25 @@ struct CreateRecipesTableMigration: AsyncMigration {
             .delete()
     }
 }
+
+struct CreateRecipesTableMigration_v2: AsyncMigration {
+    func prepare(on database: any Database) async throws {
+        // Add new columns
+        try await database.schema("recipes")
+            .field("readyInMinutes", .int, .required, .custom("DEFAULT 0"))
+            .field("servings", .int, .required, .custom("DEFAULT 0"))
+            .field("sourceUrl", .string, .required, .custom("DEFAULT ''"))
+            .field("summary", .string, .required, .custom("DEFAULT ''"))
+            .update()
+    }
+    
+    func revert(on database: any Database) async throws {
+        // Delete new columns
+        try await database.schema("recipes")
+            .deleteField("readyInMinutes")
+            .deleteField("servings")
+            .deleteField("sourceUrl")
+            .deleteField("summary")
+            .update()
+    }
+}

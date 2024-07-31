@@ -37,13 +37,15 @@ final class RecipeController: RouteCollection, Sendable {
             userID: userId
         )
         
-//        // save the recipe to database
-//        try await recipe.save(on: req.db)
-//        
-//        // DTO for the response
-//        guard let id = recipe.id else {
-//            throw Abort(.internalServerError)
-//        }
+        // save the recipe to database
+        try await recipe.save(on: req.db)
+        
+        // DTO for the response
+        guard let id = recipe.id else {
+            throw Abort(.internalServerError)
+        }
+        
+        print("#### \(id)")
         
         return "saveRecipe is called...."
     }
