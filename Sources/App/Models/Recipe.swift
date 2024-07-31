@@ -21,16 +21,48 @@ final class Recipe: Model {
     @Field(key: "image")
     var image: String
     
+    @Field(key: "readyInMinutes")
+    var readyInMinutes: Int
+    
+    @Field(key: "servings")
+    var servings: Int
+    
+    @Field(key: "sourceUrl")
+    var sourceUrl: String
+    
+    @Field(key: "summary")
+    var summary: String
+    
+    // TODO: store `analyzedInstructions`
+    
+    @Field(key: "extendedIngredients")
+    var extendedIngredients: [Ingredient]
+    
     // foreign key
     @Parent(key: "user_id")
     var user: User
     
     init() { }
     
-    init(id: UUID? = nil, title: String, image: String, userID: UUID) {
+    init(
+        id: UUID? = nil,
+        title: String,
+        image: String,
+        readyInMinutes: Int,
+        servings: Int,
+        sourceUrl: String,
+        summary: String,
+        extendedIngredients: [Ingredient],
+        userID: UUID
+    ) {
         self.id = id
         self.title = title
         self.image = image
+        self.readyInMinutes = readyInMinutes
+        self.servings = servings
+        self.sourceUrl = sourceUrl
+        self.summary = summary
+        self.extendedIngredients = extendedIngredients
         self.$user.id = userID
     }
 }

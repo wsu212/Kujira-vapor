@@ -15,26 +15,41 @@ final class Ingredient: Model {
     @ID(key: .id)
     var id: UUID?
     
-    @Field(key: "title")
-    var title: String
+    @Field(key: "aisle")
+    var aisle: String
     
-    @Field(key: "image")
-    var image: String
+    @Field(key: "consistency")
+    var consistency: String
     
-    @Field(key: "quantity")
-    var quantity: Int
+    @Field(key: "name")
+    var name: String
     
-    // foreign key
-    @Parent(key: "recipe_id")
-    var recipe: Recipe
+    @Field(key: "original")
+    var original: String
+    
+    @Field(key: "originalName")
+    var originalName: String
+    
+    @Field(key: "amount")
+    var amount: Double
+    
+    @Field(key: "unit")
+    var unit: String
+    
+    @Field(key: "meta")
+    var meta: [String]
     
     init() { }
     
-    init(id: UUID? = nil, title: String, image: String, quantity: Int, recipeId: UUID) {
+    init(id: UUID? = nil, aisle: String, consistency: String, name: String, original: String, originalName: String, amount: Double, unit: String, meta: [String]) {
         self.id = id
-        self.title = title
-        self.image = image
-        self.quantity = quantity
-        self.$recipe.id = recipeId
+        self.aisle = aisle
+        self.consistency = consistency
+        self.name = name
+        self.original = original
+        self.originalName = originalName
+        self.amount = amount
+        self.unit = unit
+        self.meta = meta
     }
 }
