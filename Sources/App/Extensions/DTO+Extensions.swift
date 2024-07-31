@@ -32,9 +32,3 @@ extension ItemResponseDTO {
         self.init(id: id, title: item.title, quantity: item.quantity, isChecked: item.isChecked)
     }
 }
-
-extension IngredientDTO {
-    var ingredient: Ingredient {
-        .init(aisle: self.aisle, consistency: self.consistency, name: self.name, original: self.original, originalName: self.originalName, amount: self.amount, unit: self.unit, meta: self.meta)
-    }
-}
