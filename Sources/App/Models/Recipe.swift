@@ -38,6 +38,9 @@ final class Recipe: Model {
     @Field(key: "extendedIngredients")
     var extendedIngredients: [IngredientDTO]
     
+    @Field(key: "analyzedInstructions")
+    var analyzedInstructions: [InstructionDTO]
+    
     // foreign key
     @Parent(key: "user_id")
     var user: User
@@ -53,6 +56,7 @@ final class Recipe: Model {
         sourceUrl: String,
         summary: String,
         extendedIngredients: [IngredientDTO],
+        analyzedInstructions: [InstructionDTO],
         userID: UUID
     ) {
         self.id = id
@@ -63,6 +67,7 @@ final class Recipe: Model {
         self.sourceUrl = sourceUrl
         self.summary = summary
         self.extendedIngredients = extendedIngredients
+        self.analyzedInstructions = analyzedInstructions
         self.$user.id = userID
     }
 }

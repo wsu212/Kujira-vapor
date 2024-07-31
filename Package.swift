@@ -13,7 +13,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/jwt.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.0.0"),
-        .package(path: "../DTO")
+        .package(url: "https://github.com/wsu212/DTO.git", branch: "main")
     ],
     targets: [
         .executableTarget(
