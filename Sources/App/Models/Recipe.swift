@@ -8,7 +8,9 @@
 import Foundation
 import Vapor
 import Fluent
+import DTO
 
+/// Model object representing a Recipe for database storage.
 final class Recipe: Model {
     static let schema = "recipes"
     
@@ -21,16 +23,51 @@ final class Recipe: Model {
     @Field(key: "image")
     var image: String
     
+    @Field(key: "readyInMinutes")
+    var readyInMinutes: Int
+    
+    @Field(key: "servings")
+    var servings: Int
+    
+    @Field(key: "sourceUrl")
+    var sourceUrl: String
+    
+    @Field(key: "summary")
+    var summary: String
+    
+    @Field(key: "extendedIngredients")
+    var extendedIngredients: [IngredientDTO]
+    
+    @Field(key: "analyzedInstructions")
+    var analyzedInstructions: [InstructionDTO]
+    
     // foreign key
     @Parent(key: "user_id")
     var user: User
     
     init() { }
     
-    init(id: UUID? = nil, title: String, image: String, userID: UUID) {
+    init(
+        id: UUID? = nil,
+        title: String,
+        image: String,
+        readyInMinutes: Int,
+        servings: Int,
+        sourceUrl: String,
+        summary: String,
+        extendedIngredients: [IngredientDTO],
+        analyzedInstructions: [InstructionDTO],
+        userID: UUID
+    ) {
         self.id = id
         self.title = title
         self.image = image
+        self.readyInMinutes = readyInMinutes
+        self.servings = servings
+        self.sourceUrl = sourceUrl
+        self.summary = summary
+        self.extendedIngredients = extendedIngredients
+        self.analyzedInstructions = analyzedInstructions
         self.$user.id = userID
     }
 }

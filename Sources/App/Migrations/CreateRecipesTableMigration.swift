@@ -23,3 +23,65 @@ struct CreateRecipesTableMigration: AsyncMigration {
             .delete()
     }
 }
+
+struct CreateRecipesTableMigration_v2: AsyncMigration {
+    func prepare(on database: any Database) async throws {
+        // Add new columns
+        try await database.schema("recipes")
+            .field("readyInMinutes", .int, .required, .custom("DEFAULT 0"))
+            .field("servings", .int, .required, .custom("DEFAULT 0"))
+            .field("sourceUrl", .string, .required, .custom("DEFAULT ''"))
+            .field("summary", .string, .required, .custom("DEFAULT ''"))
+            .update()
+    }
+    
+    func revert(on database: any Database) async throws {
+        // Delete new columns
+        try await database.schema("recipes")
+            .deleteField("readyInMinutes")
+            .deleteField("servings")
+            .deleteField("sourceUrl")
+            .deleteField("summary")
+            .update()
+    }
+}
+
+struct CreateRecipesTableMigration_v3: AsyncMigration {
+    func prepare(on database: any Database) async throws {
+        try await database.schema("recipes")
+            .field("extendedIngredients", .array(of: .json))
+            .update()
+    }
+    
+    func revert(on database: any Database) async throws {
+        try await database.schema("recipes")
+            .deleteField("extendedIngredients")
+            .update()
+    }
+}
+
+struct CreateRecipesTableMigration_v4: AsyncMigration {
+    func prepare(on database: any Database) async throws {
+        try await database.schema("recipes")
+            .field("analyzedInstructions", .array(of: .json))
+            .update()
+    }
+    
+    func revert(on database: any Database) async throws {
+        try await database.schema("recipes")
+            .deleteField("analyzedInstructions")
+            .update()
+    }
+}
+
+struct DeleteFavoriteRecipesTableMigration: AsyncMigration {
+    func prepare(on database: any Database) async throws {
+        // Delete the favorite_recipes table
+        try await database.schema("favorite_recipes").delete()
+                
+        // Delete the favorite_recipes_v2 table
+        try await database.schema("favorite_recipes_v2").delete()
+    }
+    
+    func revert(on database: any Database) async throws { }
+}

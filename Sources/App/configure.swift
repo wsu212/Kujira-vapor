@@ -34,10 +34,15 @@ public func configure(_ app: Application) async throws {
     app.migrations.add(CreateRecipesTableMigration())
     app.migrations.add(CreateIngredientsTableMigration())
     app.migrations.add(AddIsCheckedItemsTableMigration())
+    app.migrations.add(CreateRecipesTableMigration_v2())
+    app.migrations.add(DeleteFavoriteRecipesTableMigration())
+    app.migrations.add(CreateRecipesTableMigration_v3())
+    app.migrations.add(CreateRecipesTableMigration_v4())
     
     // register controllers
     try app.register(collection: UserController())
     try app.register(collection: CategoryController())
+    try app.register(collection: RecipeController())
     
     app.jwt.signers.use(.hs256(key: Environment.get("JWT_SIGN_KEY") ?? "SECRETKEY"))
     
