@@ -32,3 +32,24 @@ extension ItemResponseDTO {
         self.init(id: id, title: item.title, quantity: item.quantity, isChecked: item.isChecked)
     }
 }
+
+extension RecipeResponseDTO: Content {}
+
+extension RecipeResponseDTO {
+    init?(_ recipe: Recipe) {
+        guard let id = recipe.id else {
+            return nil
+        }
+        self.init(
+            id: id,
+            title: recipe.title,
+            image: recipe.image,
+            readyInMinutes: recipe.readyInMinutes,
+            servings: recipe.servings,
+            sourceUrl: recipe.sourceUrl,
+            summary: recipe.summary,
+            extendedIngredients: recipe.extendedIngredients,
+            analyzedInstructions: recipe.analyzedInstructions
+        )
+    }
+}

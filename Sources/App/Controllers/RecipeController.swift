@@ -21,7 +21,7 @@ final class RecipeController: RouteCollection, Sendable {
     }
     
     @Sendable
-    private func saveRecipe(req: Request) async throws -> String {
+    private func saveRecipe(req: Request) async throws -> RecipeResponseDTO {
         guard let userId = req.parameters.get("userId", as: UUID.self) else {
             throw Abort(.badRequest)
         }
@@ -43,12 +43,10 @@ final class RecipeController: RouteCollection, Sendable {
         try await recipe.save(on: req.db)
         
         // DTO for the response
-        guard let id = recipe.id else {
+        guard let responseDTO = RecipeResponseDTO(recipe) else {
             throw Abort(.internalServerError)
         }
         
-        print("#### \(id)")
-        
-        return "saveRecipe is called...."
+        return responseDTO
     }
 }
