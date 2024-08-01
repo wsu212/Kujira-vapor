@@ -8,6 +8,7 @@
 import Foundation
 import Vapor
 import DTO
+import Fluent
 
 final class RecipeController: RouteCollection, Sendable {
     func boot(routes: any RoutesBuilder) throws {
@@ -18,6 +19,10 @@ final class RecipeController: RouteCollection, Sendable {
         // POST: Save recipe
         // /api/users/:userId/recipes
         api.post("recipes", use: saveRecipe)
+        
+        // GET: Fetch recipes
+        // /api/users/:userId/recipes
+        api.get("recipes", use: fetchRecipes)
     }
     
     @Sendable
@@ -48,5 +53,19 @@ final class RecipeController: RouteCollection, Sendable {
         }
         
         return responseDTO
+    }
+    
+    @Sendable
+    private func fetchRecipes(req: Request) async throws -> [RecipeResponseDTO] {
+        guard let userId = req.parameters.get("userId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        
+        let recipes = try await Recipe.query(on: req.db)
+            .filter(\.$user.$id == userId)
+            .all()
+            .compactMap(RecipeResponseDTO.init)
+        
+        return recipes
     }
 }
