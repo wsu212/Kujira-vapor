@@ -35,7 +35,7 @@ public func configure(_ app: Application) async throws {
     app.migrations.add(CreateIngredientsTableMigration())
     app.migrations.add(AddIsCheckedItemsTableMigration())
     app.migrations.add(CreateRecipesTableMigration_v2())
-    app.migrations.add(DeleteFavoriteRecipesTableMigration())
+//    app.migrations.add(DeleteFavoriteRecipesTableMigration())
     app.migrations.add(CreateRecipesTableMigration_v3())
     app.migrations.add(CreateRecipesTableMigration_v4())
     
