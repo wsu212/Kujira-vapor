@@ -73,3 +73,17 @@ struct CreateRecipesTableMigration_v4: AsyncMigration {
             .update()
     }
 }
+
+struct CreateRecipesTableMigration_v5: AsyncMigration {
+    func prepare(on database: any Database) async throws {
+        try await database.schema("recipes")
+            .field("isFavorite", .bool, .required, .custom("DEFAULT false"))
+            .update()
+    }
+    
+    func revert(on database: any Database) async throws {
+        try await database.schema("recipes")
+            .deleteField("isFavorite")
+            .update()
+    }
+}
