@@ -20,6 +20,14 @@ final class RecipeController: RouteCollection, Sendable {
         // /api/users/:userId/recipes
         api.post("recipes", use: saveRecipe)
         
+        // PUT: Update recipe
+        // /api/users/:userId/recipes/:recipeId
+        api.put("recipes", ":recipeId", use: updateRecipe)
+        
+        // DELETE: Delete recipe
+        // /api/users/:userId/recipes/:recipeId
+        api.delete("recipes", ":recipeId", use: deleteRecipe)
+        
         // GET: Fetch recipes
         // /api/users/:userId/recipes
         api.get("recipes", use: fetchRecipes)
@@ -39,6 +47,7 @@ final class RecipeController: RouteCollection, Sendable {
             servings: recipeRequestDTO.servings,
             sourceUrl: recipeRequestDTO.sourceUrl,
             summary: recipeRequestDTO.summary,
+            isFavorite: recipeRequestDTO.isFavorite,
             extendedIngredients: recipeRequestDTO.extendedIngredients,
             analyzedInstructions: recipeRequestDTO.analyzedInstructions,
             userID: userId
@@ -48,6 +57,63 @@ final class RecipeController: RouteCollection, Sendable {
         try await recipe.save(on: req.db)
         
         // DTO for the response
+        guard let responseDTO = RecipeResponseDTO(recipe) else {
+            throw Abort(.internalServerError)
+        }
+        
+        return responseDTO
+    }
+    
+    @Sendable
+    private func updateRecipe(req: Request) async throws -> RecipeResponseDTO {
+        // get the userId
+        guard let userId = req.parameters.get("userId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        // get the recipeId
+        guard let recipeId = req.parameters.get("recipeId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        
+        // make sure the recipe exists and belongs to a user
+        guard let recipe = try await Recipe.query(on: req.db)
+            .filter(\.$user.$id == userId)
+            .filter(\.$id == recipeId)
+            .first() else { throw Abort(.notFound) }
+        
+        // decode RecipeRequestDTO
+        let recipeRequestDTO = try req.content.decode(RecipeRequestDTO.self)
+        
+        // update the recipe
+        recipe.isFavorite = recipeRequestDTO.isFavorite
+        
+        try await recipe.update(on: req.db)
+        
+        guard let responseDTO = RecipeResponseDTO(recipe) else {
+            throw Abort(.internalServerError)
+        }
+        
+        return responseDTO
+    }
+    
+    @Sendable
+    private func deleteRecipe(req: Request) async throws -> RecipeResponseDTO {
+        // get the userId
+        guard let userId = req.parameters.get("userId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        // get the recipeId
+        guard let recipeId = req.parameters.get("recipeId", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+        
+        guard let recipe = try await Recipe.query(on: req.db)
+            .filter(\.$user.$id == userId)
+            .filter(\.$id == recipeId)
+            .first() else { throw Abort(.notFound) }
+        
+        try await recipe.delete(on: req.db)
+        
         guard let responseDTO = RecipeResponseDTO(recipe) else {
             throw Abort(.internalServerError)
         }
