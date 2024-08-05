@@ -84,7 +84,7 @@ final class RecipeController: RouteCollection, Sendable {
         // decode RecipeRequestDTO
         let recipeRequestDTO = try req.content.decode(RecipeRequestDTO.self)
         
-        // update the item
+        // update the recipe
         recipe.isFavorite = recipeRequestDTO.isFavorite
         
         try await recipe.update(on: req.db)
