@@ -39,6 +39,7 @@ final class RecipeController: RouteCollection, Sendable {
             servings: recipeRequestDTO.servings,
             sourceUrl: recipeRequestDTO.sourceUrl,
             summary: recipeRequestDTO.summary,
+            isFavorite: true,
             extendedIngredients: recipeRequestDTO.extendedIngredients,
             analyzedInstructions: recipeRequestDTO.analyzedInstructions,
             userID: userId
