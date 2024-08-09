@@ -38,6 +38,7 @@ public func configure(_ app: Application) async throws {
     app.migrations.add(CreateRecipesTableMigration_v3())
     app.migrations.add(CreateRecipesTableMigration_v4())
     app.migrations.add(CreateRecipesTableMigration_v5())
+    app.migrations.add(CreateRecipesTableMigration_v6())
     
     // register controllers
     try app.register(collection: UserController())
