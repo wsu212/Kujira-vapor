@@ -49,6 +49,8 @@ extension RecipeResponseDTO {
             sourceUrl: recipe.sourceUrl,
             summary: recipe.summary,
             isFavorite: recipe.isFavorite,
+            diets: recipe.diets,
+            dishTypes: recipe.dishTypes,
             extendedIngredients: recipe.extendedIngredients,
             analyzedInstructions: recipe.analyzedInstructions
         )

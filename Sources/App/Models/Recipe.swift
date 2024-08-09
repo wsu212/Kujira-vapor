@@ -38,6 +38,12 @@ final class Recipe: Model {
     @Field(key: "isFavorite")
     var isFavorite: Bool
     
+    @Field(key: "diets")
+    var diets: [String]
+    
+    @Field(key: "dishTypes")
+    var dishTypes: [String]
+    
     @Field(key: "extendedIngredients")
     var extendedIngredients: [IngredientDTO]
     
@@ -59,6 +65,8 @@ final class Recipe: Model {
         sourceUrl: String,
         summary: String,
         isFavorite: Bool,
+        diets: [String],
+        dishTypes: [String],
         extendedIngredients: [IngredientDTO],
         analyzedInstructions: [InstructionDTO],
         userID: UUID
@@ -71,6 +79,8 @@ final class Recipe: Model {
         self.sourceUrl = sourceUrl
         self.summary = summary
         self.isFavorite = isFavorite
+        self.diets = diets
+        self.dishTypes = dishTypes
         self.extendedIngredients = extendedIngredients
         self.analyzedInstructions = analyzedInstructions
         self.$user.id = userID
