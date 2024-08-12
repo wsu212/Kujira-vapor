@@ -65,8 +65,13 @@ final class UserController: RouteCollection, Sendable {
     
     @Sendable
     func register(req: Request) async throws -> RegisterResponseDTO {
+        
         // validate the user
-        try User.validate(content: req)
+        do {
+            try User.validate(content: req)
+        } catch {
+            throw error
+        }
         
         let user = try req.content.decode(User.self)
         
