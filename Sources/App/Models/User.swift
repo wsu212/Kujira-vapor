@@ -41,8 +41,8 @@ extension User: Content, Validatable {
         validations.add(
             "password",
             as: String.self,
-            is: .count(2...4),
-            customFailureDescription: "Password must be between 2 and 4 characters long."
+            is: .count(4...10),
+            customFailureDescription: "Password must be between 4 and 10 characters long."
         )
     }
 }
