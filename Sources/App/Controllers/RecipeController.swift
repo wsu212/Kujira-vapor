@@ -34,36 +34,40 @@ final class RecipeController: RouteCollection, Sendable {
     }
     
     @Sendable
-    private func saveRecipe(req: Request) async throws -> RecipeResponseDTO {
+    private func saveRecipe(req: Request) async throws -> [RecipeResponseDTO] {
         guard let userId = req.parameters.get("userId", as: UUID.self) else {
             throw Abort(.badRequest)
         }
-        let recipeRequestDTO = try req.content.decode(RecipeRequestDTO.self)
-       
-        let recipe = Recipe(
-            title: recipeRequestDTO.title,
-            image: recipeRequestDTO.image,
-            readyInMinutes: recipeRequestDTO.readyInMinutes,
-            servings: recipeRequestDTO.servings,
-            sourceUrl: recipeRequestDTO.sourceUrl,
-            summary: recipeRequestDTO.summary,
-            isFavorite: recipeRequestDTO.isFavorite,
-            diets: recipeRequestDTO.diets,
-            dishTypes: recipeRequestDTO.dishTypes,
-            extendedIngredients: recipeRequestDTO.extendedIngredients,
-            analyzedInstructions: recipeRequestDTO.analyzedInstructions,
-            userID: userId
-        )
+        let dtos = try req.content.decode([RecipeRequestDTO].self)
+        var responseDTOs: [RecipeResponseDTO] = []
         
-        // save the recipe to database
-        try await recipe.save(on: req.db)
-        
-        // DTO for the response
-        guard let responseDTO = RecipeResponseDTO(recipe) else {
-            throw Abort(.internalServerError)
+        for dto in dtos {
+            let recipe = Recipe(
+                title: dto.title,
+                image: dto.image,
+                readyInMinutes: dto.readyInMinutes,
+                servings: dto.servings,
+                sourceUrl: dto.sourceUrl,
+                summary: dto.summary,
+                isFavorite: dto.isFavorite,
+                diets: dto.diets,
+                dishTypes: dto.dishTypes,
+                extendedIngredients: dto.extendedIngredients,
+                analyzedInstructions: dto.analyzedInstructions,
+                userID: userId
+            )
+            
+            // save the recipe to database
+            try await recipe.save(on: req.db)
+            
+            // DTO for the response
+            guard let responseDTO = RecipeResponseDTO(recipe) else {
+                throw Abort(.internalServerError)
+            }
+            responseDTOs.append(responseDTO)
         }
         
-        return responseDTO
+        return responseDTOs
     }
     
     @Sendable
