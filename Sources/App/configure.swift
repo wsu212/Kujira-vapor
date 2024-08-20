@@ -9,7 +9,7 @@ public func configure(_ app: Application) async throws {
     // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
     
     // Increase the max body size limit
-    app.routes.defaultMaxBodySize = "1mb"
+    app.routes.defaultMaxBodySize = "10mb"
     
     if let databaseURL = Environment.get("DATABASE_URL"), var postgresConfig = PostgresConfiguration(url: databaseURL) {
         postgresConfig.tlsConfiguration = .makeClientConfiguration()
